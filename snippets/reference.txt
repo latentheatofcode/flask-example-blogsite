@@ -1,0 +1,85 @@
+# To generete a Secret Key -
+
+❯ python
+Python 3.8.3 (default, May 17 2020, 18:15:42) 
+[GCC 10.1.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import secrets
+>>> secrets.token_hex(16)
+'b71ae52c34071a7e2619a9d65b617880'
+>>> exit()
+
+# form.hidden_tag() - 
+    - Adds something called CSRF token
+    - CSRF - Cross Site Request Forgery
+
+# We'll use SQL lite for development and PosgresQL for production
+
+>>> from app import db
+/usr/lib/python3.8/site-packages/flask_sqlalchemy/__init__.py:833: FSADeprecationWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True or False to suppress this warning.
+  warnings.warn(FSADeprecationWarning(
+>>> db.create_all()
+>>> from app import User, Post
+>>> user_1 = User(username='Corey', email='C@demo.com', password='password')
+>>> db.session.add(user_1)
+>>> user_2 = User(username='JohnDoe', email='jd@demo.com', password='password')
+>>> db.session.add(user_2)
+>>> db.session.commit()
+>>> User.query.all()
+[User('Corey', 'C@demo.com', 'default.jpg'), User('JohnDoe', 'jd@demo.com', 'default.jpg')]
+>>> User.query.first()
+User('Corey', 'C@demo.com', 'default.jpg')
+>>> User.query.filter_by(username='Corey').all()
+[User('Corey', 'C@demo.com', 'default.jpg')]
+>>> User.query.filter_by(username='Corey').first()
+User('Corey', 'C@demo.com', 'default.jpg')
+>>> user = User.query.filter_by(username='Corey').first()
+>>> user
+User('Corey', 'C@demo.com', 'default.jpg')
+>>> user.id
+1
+>>> user = User.query.get(1)
+>>> user
+User('Corey', 'C@demo.com', 'default.jpg')
+>>> user.posts  
+[]
+>>> user.id
+1
+>>> post_1 = Post(title='Blog 1', content='First Post Content!', user_id=user.id)
+>>> post_2 = Post(title='Blog 2', content='Second Post Content!', user_id=user.id)
+>>> db.session.add(post_1)
+>>> db.session.add(post_2)
+>>> db.session.commit     
+<bound method instrument.<locals>.do of <sqlalchemy.orm.scoping.scoped_session object at 0x7f9df2874760>>
+>>> db.session.commit()
+>>> user.posts
+[User('Blog 1', '2020-07-26 08:58:48.657834'), User('Blog 2', '2020-07-26 08:58:48.658915')]
+>>> for post in user.posts:
+...     print(post.title)
+... 
+Blog 1
+Blog 2
+>>> post = Post.query.first()
+>>> post.author
+User('Corey', 'C@demo.com', 'default.jpg')
+>>> post
+User('Blog 1', '2020-07-26 08:58:48.657834')
+>>> db.drop_all()
+>>> 
+
+# Flask-Bcrypt
+
+>>> from flask_bcrypt import Bcrypt
+>>> bcrypt = Bcrypt()
+>>> bcrypt.generate_password_hash('testing')
+b'$2b$12$i5nq/YPWussMP4pq4DsjO.q4OkKDZ1mPxq/phsD3/cs0nDr/NV.nS'
+>>> bcrypt.generate_password_hash('testing').decode('utf-8')
+'$2b$12$2PevLojV9sXIDD7I4vGm4.h0ZESe2WR2yFJz5uAN5IB8jOBymuExS'
+>>> hashed_pw = bcrypt.generate_password_hash('testing').decode('utf-8')
+>>> hashed_pw
+'$2b$12$j8kSSums6zQQdNiX5bC8oOgFSdyTU2p8xVeuzjJA3mW6LoULTVXoS'
+>>> bcrypt.check_password_hash(hashed_pw, 'password')
+False
+>>> bcrypt.check_password_hash(hashed_pw, 'testing')
+True
+>>> 
