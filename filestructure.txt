@@ -62,7 +62,8 @@
 │       ├── routes.py
 │       └── utils.py
 ├── README.md
+├── requirements.txt
 └── snippets
     └── reference.txt
 
-15 directories, 50 files
+15 directories, 51 files
