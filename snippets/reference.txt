@@ -83,3 +83,32 @@ False
 >>> bcrypt.check_password_hash(hashed_pw, 'testing')
 True
 >>> 
+
+# Email and password reset
+
+>>> from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+>>> s = Serializer('secret', 30)
+>>> token = s.dumps({'user_id': 1}).decode('utf-8')
+>>> token
+'eyJhbGciOiJIUzUxMiIsImlhdCI6MTU5NTg0NDY4NiwiZXhwIjoxNTk1ODQ0NzE2fQ.eyJ1c2VyX2lkIjoxfQ.MlwvGkQj0q1b23XGST4pTmtdnKBFQkSghO8UPqPOhrRHzsPChJS5gqWwlarZc5Ip7lwmZcRRsYyyJO23VDCKqg'
+>>> s.loads(token)
+{'user_id': 1}
+>>> s.loads(token)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/usr/lib/python3.8/site-packages/itsdangerous/jws.py", line 202, in loads
+    raise SignatureExpired(
+itsdangerous.exc.SignatureExpired: Signature expired
+>>> 
+
+import os
+
+db_user = os.environ.get('DB_USER')
+db_password = os.environ.get('DB_PASS')
+
+export DB_USER="my_db_user"
+export DB_PASS="my_db_pass_123!"
+
+print(db_user)
+print(db_password)
+
